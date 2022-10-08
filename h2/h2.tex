@@ -1,0 +1,89 @@
+\documentclass[10pt]{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{mwe}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\hypersetup{linkcolor=blue, urlcolor=blue, colorlinks}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+\title{Homework 2: \\ Resource Sharing \\ \large \textit{Computer Networks I}}
+\author{Oskar Tegby}
+\date{September 2022}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\maketitle
+
+\begin{tikzpicture}[remember picture, overlay]
+  \node [anchor=north west, inner sep=25pt]  at (current page.north west)
+     {\includegraphics[height=3.3cm]{uu-logo.png}};
+\end{tikzpicture}
+
+\section{Exercise 1 - Exponential Backoff in Ethernet}
+\begin{itemize}
+  \item The number of possible values are $\{0,1,2,\dots,2^n-1\}$, where $n$ is the number of occurred collisions. Since the probability of choosing any number is uniform, the probability, $p$, to choose $K=3$ is simply $p=1/16=6.25\%$, as we choose one element in $s=\{0,1,2,\dots,2^4-1\}$, where $|s|=16$. 
+  \item Since Ethernet has a waiting time of $512K/R$, we get a delay of
+  \begin{align*}
+    d_\text{wait}=\frac{512K}{R}=\frac{3\cdot512}{10\cdot10^6}=153.6\ \mu s
+  \end{align*}
+  when $K=3$ and $R=10$ Mb/s. 
+\end{itemize}
+\section{Exercise 2 - Broadcast Link}
+The quantity $L/R$ determines the time it takes to send the message from start to finish since we divide the message length with the transfer speed. Consequently, $d_\text{prop}<L/R$ is equivalent to $d_\text{prop}<d_\text{msg}$, where $d_\text{prop}$ denotes the the time it takes for the signal to propagate from the sender to the receiver and $d_\text{msg}$ denotes the time it takes to send the message. \\
+
+The consequence of the relationship $d_\text{prop}<d_\text{msg}$ is that the message still is being sent when the first part of the signal reaches receives the receiver. The reason is that the message has enough time to propagate the medium before we finish sending the signal. That fact, combined with the fact that the nodes start sending at the same time, means that there has to be a collision. \\
+
+If you would think of the transmission as lines whose lengths and speed correspond to the message length and the transmission speed, respectively, then this would mean that we would get two lines intersecting each other in the middle starting from the sender and ending at the receiver as one line. The signal would move from the sender until the propagation time has been reached. Then, it would seemingly connect the two until the sender stops sending the message. At that time, the line would move away from the sender towards the receiver until it reaches it and the whole transmission has been received. Both nodes doing this at the same time clearly illustrates that a collision will take place, and that it would happen exactly in the middle of the two nodes since they start sending at the same time.
+\section{Exercise 3 - Slotted ALOHA}
+\begin{itemize}
+  \item The efficiency is, in general, given by $E=Np(1-p)^{N-1}$. Here, we have $E_A=2p_A(1-p_B)$ and $E_B=2p_B(1-p_A)$, since the first probability in $E=Np(1-p)^{N-1}$ is the probability for considered node to send, and the second probability is the probability for the other nodes to send. Thus, $p_A$ comes first and then $p_B$ for Node A, and vice versa for Node B. \\
+  
+  Now, by summing the efficiencies $E_A$ and $E_B$, we get the throughput, $T$, as
+  \begin{align*}
+    T_{A+B}&=(E_A+E_B)R=(2p_A(1-p_B)+2p_B(1-p_A))R=\\
+    &=(2p_A-2p_Ap_B+2p_B-2p_Bp_A)R=2(p_A+p_B)R,
+  \end{align*}
+  for some channel rate $R$, which is kept as a variable here since it is not specified.
+  \item If $p_A=2p_B$, then we get 
+  \begin{align*}
+    T_A=2p_A(1-p_B)R=4p_B(1-p_B)R=(4p_B-4p_B^2)R=2(2p_B-2p_B^2)R,
+  \end{align*}
+  for Node $A$ and
+  \begin{align*}
+    T_B=2p_B(1-p_A)R=2p_B(1-2p_B)R=(2p_B-4p_B^2)R=2(p_B-2p_B^2)R,
+  \end{align*}
+  for Node $B$ from Exercise 3A. Clearly, $T_A\neq 2T_B$. In order to get $T_A=2T_B$, we solve
+  \begin{align*}
+    T_A&=2T_B\Leftrightarrow\\
+    \Leftrightarrow 2p_A(1-p_B)R&=4p_B(1-p_A)R\Leftrightarrow\\
+    \Leftrightarrow p_A(1-p_B)&=2p_B(1-p_A)\Leftrightarrow\\
+    \Leftrightarrow p_A-p_Ap_B&=2p_B-2p_Bp_A\Leftrightarrow\\
+    \Leftrightarrow p_A+p_Ap_B&=2p_B\Leftrightarrow \\
+    \Leftrightarrow p_A(1+p_B)&=2p_B\Leftrightarrow \\
+    \Leftrightarrow p_A&=\frac{2p_B}{1+p_B},
+  \end{align*}
+  which, for any $p_B\in[0,1]$, gives us the $p_A\in[0,1]$ such that $T_A=2T_B$. \\
+  
+  Inserting $p_B=0.5$, we get $p_A=1/1.5=1/(3/2)=2/3$, which gives us
+  \begin{align*}
+    T_A=2\cdot\frac{2}{3}\cdot(1-0.5)=\frac{2}{3}\quad\text{and}\quad T_B=2\cdot0.5\cdot(1-\frac{2}{3})=\frac{1}{3},
+  \end{align*}
+  which clearly fulfills $T_A=2T_B$, which is an indication that our answer is right (but not a proof).
+\end{itemize}
+
+\end{document}
